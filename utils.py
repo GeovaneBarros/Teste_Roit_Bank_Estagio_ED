@@ -1,27 +1,33 @@
 import requests
 from bs4 import BeautifulSoup as bs
+import pandas as pd
 from zipfile import ZipFile
 import sqlite3
+from sqlalchemy import create_engine
 
-def download_file(name_file, url):
+def download_save_file(name_file, url):
     with open(name_file, 'wb') as file:
+        print('download iniciado')
         response = requests.get(url)
         file.write(response.content)
+        print('download concluído')
 
-def get_soup(url):
-    return bs(requests.get(url).text, 'html.parser')
-
-def files_link(url):
+def files_link(url, filetype):
+    soup = bs(requests.get(url).text, 'html.parser')
     links = []
-    for link in get_soup(url).find_all('a'):
+    for link in soup.find_all('a'):
         file_link = link.get('href')
-        if '.zip' in file_link:
+        if filetype in file_link:
             links.append(file_link)
-            
+    return links
+
 def extract_file(name_zip, dir_result):
-    with ZipFile(name_zip, 'r') as zip_ref:
-        zip_ref.extractall(dir_result)
+    try:
+        with ZipFile(name_zip, 'r') as zip_ref:
+            zip_ref.extractall(dir_result)
+        return 'Extração concluída'
+    except:
+        return 'Arquivo não encontrado'
 
 def conection_database(name_database):
-    con = sqlite3.connect(name_database)
-    return con
+    return create_engine('sqlite:///'+name_database)
