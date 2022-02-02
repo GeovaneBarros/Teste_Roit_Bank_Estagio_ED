@@ -4,19 +4,24 @@ from config import *
 import pandas as pd
 from os import listdir
 from dask import dataframe as dd
+import os
 
 link_empresa = files_link(URL, FILETYPE_EMPRESA)[0]
 link_estabelecimento = files_link(URL, FILETYPE_ESTABELECIMENTO)[0]
 link_socio = files_link(URL, FILETYPE_SOCIO)[0]
 
+if not os.path.exists('download'):
+    os.mkdir('download')
 
 download_save_file('./download/'+FILETYPE_EMPRESA,link_empresa)
 download_save_file('./download/'+FILETYPE_ESTABELECIMENTO,link_estabelecimento)
 download_save_file('./download/'+FILETYPE_SOCIO,link_socio)
 
+
 print(extract_file('./download/'+FILETYPE_EMPRESA, 'src'))
 print(extract_file('./download/'+FILETYPE_ESTABELECIMENTO, 'src'))
 print(extract_file('./download/'+FILETYPE_SOCIO, 'src'))
+
 
 path_csv_empresa = None
 path_csv_estabelecimento = None
